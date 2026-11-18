@@ -13,3 +13,6 @@ __pycache__/
 pgdata/
 *.tmp
 ~$*
+
+# Configuração local do Claude Code
+.claude/
