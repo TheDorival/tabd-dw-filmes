@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>tr_18_br_filme_genero</name>
+    <description>Recarrega a tabela-ponte BR_FILME_GENERO para os filmes da carga atual: remove os vinculos existentes dos filmes presentes em stg_tmdb_movies e reinsere a partir da explosao de genres_raw, com IND_PRINCIPAL=1 para o primeiro genero listado.</description>
+    <directory>/</directory>
+    <trans_type>Normal</trans_type>
+    <size_rowset>10000</size_rowset>
+    <created_user>-</created_user>
+    <created_date>2026/10/26 00:00:00.000</created_date>
+    <modified_user>-</modified_user>
+    <modified_date>2026/10/26 00:00:00.000</modified_date>
+  </info>
+  <notepads>
+  </notepads>
+  <connection>
+    <name>dw_filmes</name>
+    <server>localhost</server>
+    <type>POSTGRESQL</type>
+    <access>Native</access>
+    <database>dw_filmes</database>
+    <port>55432</port>
+    <username>dw_filmes</username>
+    <password>Encrypted 2be98afc86aa7f280bc26a879d29faac9</password>
+  </connection>
+  <order>
+  </order>
+  <step>
+    <name>Recarrega BR_FILME_GENERO</name>
+    <type>ExecSQL</type>
+    <copies>1</copies>
+    <connection>dw_filmes</connection>
+    <sql>
+delete from sch_dw_filmes.br_filme_genero bg
+where bg.sk_filme in (
+  select df.sk_filme from sch_dw_filmes.dim_filme df
+  join sch_dw_filmes.stg_tmdb_movies s on s.imdb_id = df.id_imdb
+  where df.ind_atual = 1
+);
+
+insert into sch_dw_filmes.br_filme_genero (sk_filme, sk_genero, ind_principal)
+select df.sk_filme, dg.sk_genero,
+       case when g.pos = 1 then 1 else 0 end
+from sch_dw_filmes.stg_tmdb_movies s
+join sch_dw_filmes.dim_filme df on df.id_imdb = s.imdb_id and df.ind_atual = 1
+join unnest(string_to_array(s.genres_raw, '|')) with ordinality as g(elem, pos) on trim(g.elem) &lt;&gt; ''
+join sch_dw_filmes.dim_genero dg on dg.nome_genero = trim(g.elem);</sql>
+    <execute_each_row>N</execute_each_row>
+    <single_statement>N</single_statement>
+    <replace_variables>N</replace_variables>
+    <quote_string>N</quote_string>
+    <GUI><xloc>80</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+</transformation>

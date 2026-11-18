@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>tr_09_stg_ponte_rt</name>
+    <description>Casa os filmes do DW com o Rotten Tomatoes por titulo normalizado (titulo do TMDB ou primaryTitle do IMDb) e ano de lancamento (+-1 ano). Havendo mais de um candidato, desempata pelo diretor; sem desempate possivel, o filme fica sem correspondencia. Grava o criterio usado em stg_ponte_rt.</description>
+    <directory>/</directory>
+    <trans_type>Normal</trans_type>
+    <size_rowset>10000</size_rowset>
+    <created_user>-</created_user>
+    <created_date>2026/10/26 00:00:00.000</created_date>
+    <modified_user>-</modified_user>
+    <modified_date>2026/11/17 00:00:00.000</modified_date>
+  </info>
+  <notepads>
+  </notepads>
+  <connection>
+    <name>dw_filmes</name>
+    <server>localhost</server>
+    <type>POSTGRESQL</type>
+    <access>Native</access>
+    <database>dw_filmes</database>
+    <port>55432</port>
+    <username>dw_filmes</username>
+    <password>Encrypted 2be98afc86aa7f280bc26a879d29faac9</password>
+  </connection>
+  <order>
+
+  </order>
+  <step>
+    <name>Casamento TMDB x Rotten Tomatoes</name>
+    <type>ExecSQL</type>
+    <copies>1</copies>
+    <connection>dw_filmes</connection>
+    <sql>truncate table sch_dw_filmes.stg_ponte_rt;
+
+insert into sch_dw_filmes.stg_ponte_rt (imdb_id, rt_link, criterio)
+with titulos as (
+    select s.imdb_id, s.release_year::int as ano, s.director,
+           sch_dw_filmes.fn_normaliza_titulo(s.original_title) as titulo
+      from sch_dw_filmes.stg_tmdb_movies s
+    union
+    select s.imdb_id, s.release_year::int, s.director,
+           sch_dw_filmes.fn_normaliza_titulo(t.primary_title)
+      from sch_dw_filmes.stg_tmdb_movies s
+      join sch_dw_filmes.stg_imdb_titulos t on t.tconst = s.imdb_id
+),
+rt as (
+    select rt_link, directors,
+           sch_dw_filmes.fn_normaliza_titulo(movie_title) as titulo,
+           substr(original_release_date, 1, 4)::int as ano
+      from sch_dw_filmes.stg_rt_filmes
+     where original_release_date ~ '^[0-9]{4}'
+),
+candidatos as (
+    select distinct t.imdb_id, r.rt_link, (r.ano = t.ano) as ano_exato,
+           position(sch_dw_filmes.fn_normaliza_titulo(split_part(t.director, '|', 1))
+                    in sch_dw_filmes.fn_normaliza_titulo(r.directors)) &gt; 0 as diretor_confere
+      from titulos t
+      join rt r on r.titulo = t.titulo and abs(r.ano - t.ano) &lt;= 1
+     where t.titulo &lt;&gt; ''
+),
+resumo as (
+    select imdb_id, count(*) as n, count(*) filter (where diretor_confere) as n_dir
+      from candidatos group by imdb_id
+),
+escolhidos as (
+    select c.imdb_id, c.rt_link, c.ano_exato, c.diretor_confere,
+           case when r.n = 1 and c.ano_exato then 'titulo e ano'
+                when r.n = 1 then 'titulo e ano +-1'
+                else 'desempate pelo diretor' end as criterio
+      from candidatos c
+      join resumo r on r.imdb_id = c.imdb_id
+     where r.n = 1 or (r.n_dir = 1 and c.diretor_confere)
+),
+-- Uma pagina do RT so pode corresponder a um filme: se mais de um filme do DW
+-- escolheu a mesma pagina, fica o unico com ano exato e diretor conferindo
+-- (ou so com ano exato); sem um vencedor unico, nenhum e casado.
+disputa as (
+    select e.*,
+           count(*) over (partition by rt_link) as n_link,
+           count(*) filter (where ano_exato and diretor_confere) over (partition by rt_link) as n_forte,
+           count(*) filter (where ano_exato) over (partition by rt_link) as n_ano
+      from escolhidos e
+)
+select imdb_id, rt_link, criterio
+  from disputa
+ where n_link = 1
+    or (n_forte = 1 and ano_exato and diretor_confere)
+    or (n_forte = 0 and n_ano = 1 and ano_exato);</sql>
+    <execute_each_row>N</execute_each_row>
+    <single_statement>N</single_statement>
+    <replace_variables>N</replace_variables>
+    <quote_string>N</quote_string>
+    <GUI><xloc>80</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+</transformation>

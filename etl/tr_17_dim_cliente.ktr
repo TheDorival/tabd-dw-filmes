@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>tr_17_dim_cliente</name>
+    <description>Carrega DIM_CLIENTE com as combinacoes de faixa etaria, tipo de assento e tamanho do grupo presentes na base de vendas (SCD Tipo 1; a base nao identifica pessoas).</description>
+    <directory>/</directory>
+    <trans_type>Normal</trans_type>
+    <size_rowset>10000</size_rowset>
+    <created_user>-</created_user>
+    <created_date>2026/10/26 00:00:00.000</created_date>
+    <modified_user>-</modified_user>
+    <modified_date>2026/11/17 00:00:00.000</modified_date>
+  </info>
+  <notepads>
+  </notepads>
+  <connection>
+    <name>dw_filmes</name>
+    <server>localhost</server>
+    <type>POSTGRESQL</type>
+    <access>Native</access>
+    <database>dw_filmes</database>
+    <port>55432</port>
+    <username>dw_filmes</username>
+    <password>Encrypted 2be98afc86aa7f280bc26a879d29faac9</password>
+  </connection>
+  <order>
+
+  </order>
+  <step>
+    <name>Carrega DIM_CLIENTE</name>
+    <type>ExecSQL</type>
+    <copies>1</copies>
+    <connection>dw_filmes</connection>
+    <sql>insert into sch_dw_filmes.dim_cliente (sk_cliente, faixa_etaria, tipo_assento, tamanho_grupo)
+select nextval('sch_dw_filmes.seq_dim_cliente'), t.faixa_etaria, t.tipo_assento, t.tamanho_grupo
+from (
+  select distinct
+         case when age::int &lt; 25 then '18-24' when age::int &lt; 35 then '25-34'
+              when age::int &lt; 45 then '35-44' when age::int &lt; 55 then '45-54' else '55-60' end as faixa_etaria,
+         case seat_type when 'Standard' then 'Padrao' else seat_type end as tipo_assento,
+         case when number_of_person = 'Alone' then 'Sozinho' else number_of_person || ' pessoas' end as tamanho_grupo
+  from sch_dw_filmes.stg_cinema_hall
+) t
+where not exists (
+  select 1 from sch_dw_filmes.dim_cliente d
+   where d.faixa_etaria = t.faixa_etaria and d.tipo_assento = t.tipo_assento
+     and d.tamanho_grupo = t.tamanho_grupo
+);</sql>
+    <execute_each_row>N</execute_each_row>
+    <single_statement>N</single_statement>
+    <replace_variables>N</replace_variables>
+    <quote_string>N</quote_string>
+    <GUI><xloc>80</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+</transformation>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>tr_21_ft_vendas_ingressos</name>
+    <description>Carrega FT_VENDAS_INGRESSOS (grao: um ingresso) a partir de stg_cinema_hall, resolvendo DIM_GENERO e DIM_CLIENTE. Upsert pelo numero da linha na fonte (nr_ingresso), pois o Ticket_ID nao e unico.</description>
+    <directory>/</directory>
+    <trans_type>Normal</trans_type>
+    <size_rowset>10000</size_rowset>
+    <created_user>-</created_user>
+    <created_date>2026/10/26 00:00:00.000</created_date>
+    <modified_user>-</modified_user>
+    <modified_date>2026/11/17 00:00:00.000</modified_date>
+  </info>
+  <notepads>
+  </notepads>
+  <connection>
+    <name>dw_filmes</name>
+    <server>localhost</server>
+    <type>POSTGRESQL</type>
+    <access>Native</access>
+    <database>dw_filmes</database>
+    <port>55432</port>
+    <username>dw_filmes</username>
+    <password>Encrypted 2be98afc86aa7f280bc26a879d29faac9</password>
+  </connection>
+  <order>
+
+  </order>
+  <step>
+    <name>Carrega FT_VENDAS_INGRESSOS</name>
+    <type>ExecSQL</type>
+    <copies>1</copies>
+    <connection>dw_filmes</connection>
+    <sql>insert into sch_dw_filmes.ft_vendas_ingressos
+  (nr_ingresso, id_ingresso, sk_genero, sk_cliente, idade, preco_ingresso, qtd_pessoas, ind_recompra)
+select
+  c.nr_linha,
+  c.ticket_id,
+  g.sk_genero,
+  dc.sk_cliente,
+  c.age::numeric,
+  c.ticket_price::numeric,
+  case when c.number_of_person = 'Alone' then 1 else c.number_of_person::numeric end,
+  case when c.purchase_again = 'Yes' then 1 else 0 end
+from sch_dw_filmes.stg_cinema_hall c
+join sch_dw_filmes.dim_genero g
+  on g.nome_genero = case trim(c.movie_genre) when 'Sci-Fi' then 'Science Fiction' else trim(c.movie_genre) end
+join sch_dw_filmes.dim_cliente dc
+  on dc.faixa_etaria = case when c.age::int &lt; 25 then '18-24' when c.age::int &lt; 35 then '25-34'
+                            when c.age::int &lt; 45 then '35-44' when c.age::int &lt; 55 then '45-54' else '55-60' end
+ and dc.tipo_assento = case c.seat_type when 'Standard' then 'Padrao' else c.seat_type end
+ and dc.tamanho_grupo = case when c.number_of_person = 'Alone' then 'Sozinho' else c.number_of_person || ' pessoas' end
+on conflict on constraint ft_vendas_pk do update set
+  id_ingresso = excluded.id_ingresso,
+  sk_genero = excluded.sk_genero,
+  sk_cliente = excluded.sk_cliente,
+  idade = excluded.idade,
+  preco_ingresso = excluded.preco_ingresso,
+  qtd_pessoas = excluded.qtd_pessoas,
+  ind_recompra = excluded.ind_recompra;</sql>
+    <execute_each_row>N</execute_each_row>
+    <single_statement>N</single_statement>
+    <replace_variables>N</replace_variables>
+    <quote_string>N</quote_string>
+    <GUI><xloc>80</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+</transformation>

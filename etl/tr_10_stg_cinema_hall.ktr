@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>tr_10_stg_cinema_hall</name>
+    <description>Extrai cinema_hall_ticket_sales.csv para stg_cinema_hall, numerando as linhas (nr_linha), pois o Ticket_ID da fonte nao e unico.</description>
+    <directory>/</directory>
+    <trans_type>Normal</trans_type>
+    <size_rowset>10000</size_rowset>
+    <created_user>-</created_user>
+    <created_date>2026/10/26 00:00:00.000</created_date>
+    <modified_user>-</modified_user>
+    <modified_date>2026/11/17 00:00:00.000</modified_date>
+  </info>
+  <notepads>
+  </notepads>
+  <connection>
+    <name>dw_filmes</name>
+    <server>localhost</server>
+    <type>POSTGRESQL</type>
+    <access>Native</access>
+    <database>dw_filmes</database>
+    <port>55432</port>
+    <username>dw_filmes</username>
+    <password>Encrypted 2be98afc86aa7f280bc26a879d29faac9</password>
+  </connection>
+  <order>
+    <hop><from>CSV Input</from><to>Select values</to><enabled>Y</enabled></hop>
+    <hop><from>Select values</from><to>Table Output</to><enabled>Y</enabled></hop>
+  </order>
+  <step>
+    <name>CSV Input</name>
+    <type>CsvInput</type>
+    <copies>1</copies>
+    <separator>,</separator>
+    <enclosure>"</enclosure>
+    <header>Y</header>
+    <buffer_size>50000</buffer_size>
+    <lazy_conversion>N</lazy_conversion>
+    <add_filename_result>N</add_filename_result>
+    <parallel>N</parallel>
+    <newline_possible>Y</newline_possible>
+    <rownum_field>nr_linha</rownum_field>
+    <filename>${Internal.Transformation.Filename.Directory}/../data/cinema_hall_ticket_sales.csv</filename>
+    <encoding>UTF-8</encoding>
+    <fields>
+      <field><name>Ticket_ID</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>Age</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>Ticket_Price</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>Movie_Genre</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>Seat_Type</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>Number_of_Person</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>Purchase_Again</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+    </fields>
+    <GUI><xloc>80</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+  <step>
+    <name>Select values</name>
+    <type>SelectValues</type>
+    <copies>1</copies>
+    <fields>
+      <field><name>nr_linha</name></field>
+      <field><name>Ticket_ID</name><rename>ticket_id</rename></field>
+      <field><name>Age</name><rename>age</rename></field>
+      <field><name>Ticket_Price</name><rename>ticket_price</rename></field>
+      <field><name>Movie_Genre</name><rename>movie_genre</rename></field>
+      <field><name>Seat_Type</name><rename>seat_type</rename></field>
+      <field><name>Number_of_Person</name><rename>number_of_person</rename></field>
+      <field><name>Purchase_Again</name><rename>purchase_again</rename></field>
+    </fields>
+    <GUI><xloc>230</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+  <step>
+    <name>Table Output</name>
+    <type>TableOutput</type>
+    <copies>1</copies>
+    <connection>dw_filmes</connection>
+    <schema>sch_dw_filmes</schema>
+    <table>stg_cinema_hall</table>
+    <commit>5000</commit>
+    <truncate>Y</truncate>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>N</specify_fields>
+    <fields>
+    </fields>
+    <GUI><xloc>380</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+</transformation>

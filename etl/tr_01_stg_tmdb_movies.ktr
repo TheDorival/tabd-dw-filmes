@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>tr_01_stg_tmdb_movies</name>
+    <description>Extrai tmdb-movies.csv, aplica os filtros de qualidade (imdb_id, diretor e produtora presentes; orcamento e receita ajustados &gt; 0) e deduplica por imdb_id mantendo a linha de maior receita (stg_tmdb_movies). As linhas reprovadas apenas por orcamento ou receita zerados vao para stg_tmdb_sem_financeiro, candidatas a recuperacao pelo TMDB 5000 (tr_03).</description>
+    <directory>/</directory>
+    <trans_type>Normal</trans_type>
+    <size_rowset>10000</size_rowset>
+    <created_user>-</created_user>
+    <created_date>2026/10/26 00:00:00.000</created_date>
+    <modified_user>-</modified_user>
+    <modified_date>2026/11/17 00:00:00.000</modified_date>
+  </info>
+  <notepads>
+  </notepads>
+  <connection>
+    <name>dw_filmes</name>
+    <server>localhost</server>
+    <type>POSTGRESQL</type>
+    <access>Native</access>
+    <database>dw_filmes</database>
+    <port>55432</port>
+    <username>dw_filmes</username>
+    <password>Encrypted 2be98afc86aa7f280bc26a879d29faac9</password>
+  </connection>
+  <order>
+    <hop><from>CSV Input</from><to>Select values</to><enabled>Y</enabled></hop>
+    <hop><from>Select values</from><to>Filtro imdb_id</to><enabled>Y</enabled></hop>
+    <hop><from>Filtro imdb_id</from><to>Filtro diretor</to><enabled>Y</enabled></hop>
+    <hop><from>Filtro diretor</from><to>Filtro produtora</to><enabled>Y</enabled></hop>
+    <hop><from>Filtro produtora</from><to>Filtro orcamento</to><enabled>Y</enabled></hop>
+    <hop><from>Filtro orcamento</from><to>Filtro receita</to><enabled>Y</enabled></hop>
+    <hop><from>Filtro receita</from><to>Sort rows</to><enabled>Y</enabled></hop>
+    <hop><from>Sort rows</from><to>Unique rows</to><enabled>Y</enabled></hop>
+    <hop><from>Unique rows</from><to>Table Output</to><enabled>Y</enabled></hop>
+    <hop><from>Filtro orcamento</from><to>Sem financeiro</to><enabled>Y</enabled></hop>
+    <hop><from>Filtro receita</from><to>Sem financeiro</to><enabled>Y</enabled></hop>
+  </order>
+  <step>
+    <name>CSV Input</name>
+    <type>CsvInput</type>
+    <copies>1</copies>
+    <separator>,</separator>
+    <enclosure>"</enclosure>
+    <header>Y</header>
+    <buffer_size>50000</buffer_size>
+    <lazy_conversion>N</lazy_conversion>
+    <add_filename_result>N</add_filename_result>
+    <parallel>N</parallel>
+    <newline_possible>Y</newline_possible>
+    <filename>${Internal.Transformation.Filename.Directory}/../data/tmdb-movies.csv</filename>
+    <encoding>UTF-8</encoding>
+    <fields>
+      <field><name>id</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>imdb_id</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>popularity</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>budget</name><type>Number</type><format></format><currency/><decimal>.</decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>revenue</name><type>Number</type><format></format><currency/><decimal>.</decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>original_title</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>cast</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>homepage</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>director</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>tagline</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>keywords</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>overview</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>runtime</name><type>Integer</type><format>#</format><currency/><decimal>.</decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>genres</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>production_companies</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>release_date</name><type>Date</type><format>M/d/yy</format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>vote_count</name><type>Integer</type><format>#</format><currency/><decimal>.</decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>vote_average</name><type>Number</type><format></format><currency/><decimal>.</decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>release_year</name><type>Integer</type><format>#</format><currency/><decimal>.</decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>budget_adj</name><type>Number</type><format></format><currency/><decimal>.</decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>revenue_adj</name><type>Number</type><format></format><currency/><decimal>.</decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+    </fields>
+    <GUI><xloc>80</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+  <step>
+    <name>Select values</name>
+    <type>SelectValues</type>
+    <copies>1</copies>
+    <fields>
+      <field><name>id</name><rename>id_tmdb</rename></field>
+      <field><name>imdb_id</name></field>
+      <field><name>original_title</name></field>
+      <field><name>overview</name></field>
+      <field><name>runtime</name></field>
+      <field><name>release_year</name></field>
+      <field><name>release_date</name></field>
+      <field><name>director</name></field>
+      <field><name>cast</name><rename>cast_raw</rename></field>
+      <field><name>genres</name><rename>genres_raw</rename></field>
+      <field><name>production_companies</name><rename>production_companies_raw</rename></field>
+      <field><name>vote_average</name></field>
+      <field><name>vote_count</name></field>
+      <field><name>budget</name></field>
+      <field><name>revenue</name></field>
+      <field><name>budget_adj</name></field>
+      <field><name>revenue_adj</name></field>
+    </fields>
+    <GUI><xloc>230</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+  <step>
+    <name>Filtro imdb_id</name>
+    <type>FilterRows</type>
+    <copies>1</copies>
+    <send_true_to>Filtro diretor</send_true_to>
+    <compare>
+      <condition>
+        <negate>N</negate>
+        <leftvalue>imdb_id</leftvalue>
+        <function>IS NOT NULL</function>
+        
+      </condition>
+    </compare>
+    <GUI><xloc>380</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+  <step>
+    <name>Filtro diretor</name>
+    <type>FilterRows</type>
+    <copies>1</copies>
+    <send_true_to>Filtro produtora</send_true_to>
+    <compare>
+      <condition>
+        <negate>N</negate>
+        <leftvalue>director</leftvalue>
+        <function>IS NOT NULL</function>
+        
+      </condition>
+    </compare>
+    <GUI><xloc>530</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+  <step>
+    <name>Filtro produtora</name>
+    <type>FilterRows</type>
+    <copies>1</copies>
+    <send_true_to>Filtro orcamento</send_true_to>
+    <compare>
+      <condition>
+        <negate>N</negate>
+        <leftvalue>production_companies_raw</leftvalue>
+        <function>IS NOT NULL</function>
+        
+      </condition>
+    </compare>
+    <GUI><xloc>680</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+  <step>
+    <name>Filtro orcamento</name>
+    <type>FilterRows</type>
+    <copies>1</copies>
+    <send_true_to>Filtro receita</send_true_to>
+    <send_false_to>Sem financeiro</send_false_to>
+    <compare>
+      <condition>
+        <negate>N</negate>
+        <leftvalue>budget_adj</leftvalue>
+        <function>&gt;</function>
+        <value><name>constant</name><type>Number</type><text>0</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask/></value>
+      </condition>
+    </compare>
+    <GUI><xloc>830</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+  <step>
+    <name>Filtro receita</name>
+    <type>FilterRows</type>
+    <copies>1</copies>
+    <send_true_to>Sort rows</send_true_to>
+    <send_false_to>Sem financeiro</send_false_to>
+    <compare>
+      <condition>
+        <negate>N</negate>
+        <leftvalue>revenue_adj</leftvalue>
+        <function>&gt;</function>
+        <value><name>constant</name><type>Number</type><text>0</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask/></value>
+      </condition>
+    </compare>
+    <GUI><xloc>980</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+  <step>
+    <name>Sort rows</name>
+    <type>SortRows</type>
+    <copies>1</copies>
+    <directory>%%java.io.tmpdir%%</directory>
+    <prefix>out</prefix>
+    <sort_size>1000000</sort_size>
+    <compress>N</compress>
+    <unique_rows>N</unique_rows>
+    <fields>
+      <field><name>imdb_id</name><ascending>Y</ascending><case_sensitive>N</case_sensitive><presorted>N</presorted></field>
+      <field><name>revenue_adj</name><ascending>N</ascending><case_sensitive>N</case_sensitive><presorted>N</presorted></field>
+    </fields>
+    <GUI><xloc>1130</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+  <step>
+    <name>Unique rows</name>
+    <type>Unique</type>
+    <copies>1</copies>
+    <count_rows>N</count_rows>
+    <reject_duplicate_row>N</reject_duplicate_row>
+    <fields>
+      <field><name>imdb_id</name></field>
+    </fields>
+    <GUI><xloc>1280</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+  <step>
+    <name>Table Output</name>
+    <type>TableOutput</type>
+    <copies>1</copies>
+    <connection>dw_filmes</connection>
+    <schema>sch_dw_filmes</schema>
+    <table>stg_tmdb_movies</table>
+    <commit>5000</commit>
+    <truncate>Y</truncate>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>N</specify_fields>
+    <fields>
+    </fields>
+    <GUI><xloc>1430</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+  <step>
+    <name>Sem financeiro</name>
+    <type>TableOutput</type>
+    <copies>1</copies>
+    <connection>dw_filmes</connection>
+    <schema>sch_dw_filmes</schema>
+    <table>stg_tmdb_sem_financeiro</table>
+    <commit>5000</commit>
+    <truncate>Y</truncate>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>N</specify_fields>
+    <fields>
+    </fields>
+    <GUI><xloc>980</xloc><yloc>220</yloc><draw>Y</draw></GUI>
+  </step>
+</transformation>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>tr_20_ft_desempenho_filme</name>
+    <description>Carrega FT_DESEMPENHO_FILME (grao: um filme) integrando as fontes: orcamento e receita do TMDB (ou do TMDB 5000), nota e votos do publico do IMDb (TMDB quando o IMDb nao tem nota), nota e votos da critica do Rotten Tomatoes. Diretor principal = primeiro diretor do filme no IMDb. ROI_NORMALIZADO e ISI entram com valor provisorio e sao calculados na tr_22. Upsert por sk_filme.</description>
+    <directory>/</directory>
+    <trans_type>Normal</trans_type>
+    <size_rowset>10000</size_rowset>
+    <created_user>-</created_user>
+    <created_date>2026/10/26 00:00:00.000</created_date>
+    <modified_user>-</modified_user>
+    <modified_date>2026/11/17 00:00:00.000</modified_date>
+  </info>
+  <notepads>
+  </notepads>
+  <connection>
+    <name>dw_filmes</name>
+    <server>localhost</server>
+    <type>POSTGRESQL</type>
+    <access>Native</access>
+    <database>dw_filmes</database>
+    <port>55432</port>
+    <username>dw_filmes</username>
+    <password>Encrypted 2be98afc86aa7f280bc26a879d29faac9</password>
+  </connection>
+  <order>
+
+  </order>
+  <step>
+    <name>Carrega FT_DESEMPENHO_FILME</name>
+    <type>ExecSQL</type>
+    <copies>1</copies>
+    <connection>dw_filmes</connection>
+    <sql>insert into sch_dw_filmes.ft_desempenho_filme
+  (sk_filme, sk_diretor, sk_produtora, sk_tempo_lancamento,
+   orcamento, receita_bilheteria, roi, roi_normalizado,
+   nota_publico, votos_publico, nota_critica, votos_critica,
+   nota_publico_tmdb, nota_publico_rt, indice_sucesso_integrado, ind_isi_completo, origem_financeiro)
+select
+  df.sk_filme,
+  coalesce(dd.sk_diretor, 0),
+  coalesce(dp.sk_produtora, 0),
+  dt.sk_tempo,
+  s.budget_adj,
+  s.revenue_adj,
+  round(((s.revenue_adj - s.budget_adj) / s.budget_adj)::numeric, 4),
+  0,
+  coalesce(round(n.average_rating::numeric * 10, 2), round((s.vote_average * 10)::numeric, 2)),
+  coalesce(n.num_votes::numeric, s.vote_count, 0),
+  case when r.tomatometer_rating ~ '^[0-9]+$' then r.tomatometer_rating::numeric end,
+  case when r.tomatometer_count ~ '^[0-9]+$' then r.tomatometer_count::numeric else 0 end,
+  round((s.vote_average * 10)::numeric, 2),
+  case when r.audience_rating ~ '^[0-9]+$' then r.audience_rating::numeric end,
+  0,
+  0,
+  s.origem_financeiro
+from sch_dw_filmes.stg_tmdb_movies s
+join sch_dw_filmes.dim_filme df on df.id_imdb = s.imdb_id and df.ind_atual = 1
+join sch_dw_filmes.dim_tempo dt on dt.data = s.release_date
+left join lateral (
+  select p.nconst from sch_dw_filmes.stg_imdb_principais p
+   where p.tconst = s.imdb_id and p.category = 'director'
+   order by p.ordering::int limit 1
+) dir on true
+left join sch_dw_filmes.dim_diretor dd on dd.id_nconst = dir.nconst
+left join sch_dw_filmes.dim_produtora dp
+  on dp.nome_produtora = sch_dw_filmes.fn_corrige_codificacao(trim(split_part(s.production_companies_raw, '|', 1)))
+left join sch_dw_filmes.stg_imdb_notas n on n.tconst = s.imdb_id
+left join sch_dw_filmes.stg_ponte_rt pr on pr.imdb_id = s.imdb_id
+left join sch_dw_filmes.stg_rt_filmes r on r.rt_link = pr.rt_link
+on conflict on constraint ft_desemp_uk_filme do update set
+  sk_diretor = excluded.sk_diretor,
+  sk_produtora = excluded.sk_produtora,
+  sk_tempo_lancamento = excluded.sk_tempo_lancamento,
+  orcamento = excluded.orcamento,
+  receita_bilheteria = excluded.receita_bilheteria,
+  roi = excluded.roi,
+  nota_publico = excluded.nota_publico,
+  votos_publico = excluded.votos_publico,
+  nota_critica = excluded.nota_critica,
+  votos_critica = excluded.votos_critica,
+  nota_publico_tmdb = excluded.nota_publico_tmdb,
+  nota_publico_rt = excluded.nota_publico_rt,
+  origem_financeiro = excluded.origem_financeiro;</sql>
+    <execute_each_row>N</execute_each_row>
+    <single_statement>N</single_statement>
+    <replace_variables>N</replace_variables>
+    <quote_string>N</quote_string>
+    <GUI><xloc>80</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+</transformation>

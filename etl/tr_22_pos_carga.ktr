@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>tr_22_pos_carga</name>
+    <description>Pos-carga: (1) sincroniza IND_ATUAL de DIM_FILME com DAT_FIM_VIGENCIA; (2) recalcula para toda a FT_DESEMPENHO_FILME o ROI_NORMALIZADO (percentil do ROI x 100) e o ISI = 0,40 x ROI_normalizado + 0,30 x nota do publico + 0,30 x nota da critica. Sem nota da critica, o ISI usa as duas componentes disponiveis, renormalizadas ((0,40 x ROI_normalizado + 0,30 x nota do publico) / 0,70), e IND_ISI_COMPLETO = 0.</description>
+    <directory>/</directory>
+    <trans_type>Normal</trans_type>
+    <size_rowset>10000</size_rowset>
+    <created_user>-</created_user>
+    <created_date>2026/10/26 00:00:00.000</created_date>
+    <modified_user>-</modified_user>
+    <modified_date>2026/11/17 00:00:00.000</modified_date>
+  </info>
+  <notepads>
+  </notepads>
+  <connection>
+    <name>dw_filmes</name>
+    <server>localhost</server>
+    <type>POSTGRESQL</type>
+    <access>Native</access>
+    <database>dw_filmes</database>
+    <port>55432</port>
+    <username>dw_filmes</username>
+    <password>Encrypted 2be98afc86aa7f280bc26a879d29faac9</password>
+  </connection>
+  <order>
+
+  </order>
+  <step>
+    <name>Pos-carga</name>
+    <type>ExecSQL</type>
+    <copies>1</copies>
+    <connection>dw_filmes</connection>
+    <sql>update sch_dw_filmes.dim_filme
+   set ind_atual = case when dat_fim_vigencia = date '9999-12-31' then 1 else 0 end;
+
+update sch_dw_filmes.ft_desempenho_filme f
+   set roi_normalizado = sub.pct,
+       indice_sucesso_integrado = case
+         when f.nota_critica is not null
+           then round((0.40 * sub.pct + 0.30 * coalesce(f.nota_publico, 0) + 0.30 * f.nota_critica)::numeric, 2)
+         else round(((0.40 * sub.pct + 0.30 * coalesce(f.nota_publico, 0)) / 0.70)::numeric, 2)
+       end,
+       ind_isi_completo = case when f.nota_critica is not null then 1 else 0 end
+  from (
+    select sk_filme,
+           round((percent_rank() over (order by roi))::numeric * 100, 2) as pct
+    from sch_dw_filmes.ft_desempenho_filme
+  ) sub
+ where f.sk_filme = sub.sk_filme;</sql>
+    <execute_each_row>N</execute_each_row>
+    <single_statement>N</single_statement>
+    <replace_variables>N</replace_variables>
+    <quote_string>N</quote_string>
+    <GUI><xloc>80</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+</transformation>

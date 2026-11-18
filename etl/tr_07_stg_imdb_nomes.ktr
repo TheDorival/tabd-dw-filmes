@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>tr_07_stg_imdb_nomes</name>
+    <description>Le imdb.name.basics.csv e guarda em stg_imdb_nomes o nome e o ano de nascimento dos profissionais presentes em stg_imdb_principais.</description>
+    <directory>/</directory>
+    <trans_type>Normal</trans_type>
+    <size_rowset>10000</size_rowset>
+    <created_user>-</created_user>
+    <created_date>2026/10/26 00:00:00.000</created_date>
+    <modified_user>-</modified_user>
+    <modified_date>2026/11/17 00:00:00.000</modified_date>
+  </info>
+  <notepads>
+  </notepads>
+  <connection>
+    <name>dw_filmes</name>
+    <server>localhost</server>
+    <type>POSTGRESQL</type>
+    <access>Native</access>
+    <database>dw_filmes</database>
+    <port>55432</port>
+    <username>dw_filmes</username>
+    <password>Encrypted 2be98afc86aa7f280bc26a879d29faac9</password>
+  </connection>
+  <order>
+    <hop><from>CSV Input</from><to>Busca no DW</to><enabled>Y</enabled></hop>
+    <hop><from>Chaves do DW</from><to>Busca no DW</to><enabled>Y</enabled></hop>
+    <hop><from>Busca no DW</from><to>Filtro encontrado</to><enabled>Y</enabled></hop>
+    <hop><from>Filtro encontrado</from><to>Select values</to><enabled>Y</enabled></hop>
+    <hop><from>Select values</from><to>Table Output</to><enabled>Y</enabled></hop>
+  </order>
+  <step>
+    <name>CSV Input</name>
+    <type>CsvInput</type>
+    <copies>1</copies>
+    <separator>,</separator>
+    <enclosure>"</enclosure>
+    <header>Y</header>
+    <buffer_size>50000</buffer_size>
+    <lazy_conversion>N</lazy_conversion>
+    <add_filename_result>N</add_filename_result>
+    <parallel>N</parallel>
+    <newline_possible>Y</newline_possible>
+    <filename>${Internal.Transformation.Filename.Directory}/../data/imdb.name.basics.csv</filename>
+    <encoding>UTF-8</encoding>
+    <fields>
+      <field><name>nconst</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>primaryName</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>birthYear</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>deathYear</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>primaryProfession</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+      <field><name>knownForTitles</name><type>String</type><format></format><currency/><decimal></decimal><group/><length>-1</length><precision>-1</precision><trim_type>both</trim_type></field>
+    </fields>
+    <GUI><xloc>80</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+  <step>
+    <name>Chaves do DW</name>
+    <type>TableInput</type>
+    <copies>1</copies>
+    <connection>dw_filmes</connection>
+    <sql>select distinct nconst as chave from sch_dw_filmes.stg_imdb_principais</sql>
+    <limit>0</limit>
+    <lookup/>
+    <execute_each_row>N</execute_each_row>
+    <variables_active>N</variables_active>
+    <lazy_conversion_active>N</lazy_conversion_active>
+    <GUI><xloc>380</xloc><yloc>220</yloc><draw>Y</draw></GUI>
+  </step>
+  <step>
+    <name>Busca no DW</name>
+    <type>StreamLookup</type>
+    <copies>1</copies>
+    <from>Chaves do DW</from>
+    <input_sorted>N</input_sorted>
+    <preserve_memory>Y</preserve_memory>
+    <sorted_list>N</sorted_list>
+    <integer_pair>N</integer_pair>
+    <lookup>
+      <key><name>nconst</name><field>chave</field></key>
+      <value><name>chave</name><rename>achado</rename><default/><type>String</type></value>
+    </lookup>
+    <GUI><xloc>230</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+  <step>
+    <name>Filtro encontrado</name>
+    <type>FilterRows</type>
+    <copies>1</copies>
+    <send_true_to>Select values</send_true_to>
+    <compare>
+      <condition>
+        <negate>N</negate>
+        <leftvalue>achado</leftvalue>
+        <function>IS NOT NULL</function>
+        
+      </condition>
+    </compare>
+    <GUI><xloc>380</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+  <step>
+    <name>Select values</name>
+    <type>SelectValues</type>
+    <copies>1</copies>
+    <fields>
+      <field><name>nconst</name></field>
+      <field><name>primaryName</name><rename>primary_name</rename></field>
+      <field><name>birthYear</name><rename>birth_year</rename></field>
+    </fields>
+    <GUI><xloc>530</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+  <step>
+    <name>Table Output</name>
+    <type>TableOutput</type>
+    <copies>1</copies>
+    <connection>dw_filmes</connection>
+    <schema>sch_dw_filmes</schema>
+    <table>stg_imdb_nomes</table>
+    <commit>5000</commit>
+    <truncate>Y</truncate>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>N</specify_fields>
+    <fields>
+    </fields>
+    <GUI><xloc>680</xloc><yloc>80</yloc><draw>Y</draw></GUI>
+  </step>
+</transformation>
