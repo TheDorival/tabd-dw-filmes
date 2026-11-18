@@ -21,7 +21,7 @@ Marcelo Alves Feitoza.
 ## Estrutura
 
 ```
-dw-filmes-etl/
+tabd-dw-filmes/
 ├── docker-compose.yml               # PostgreSQL 16 em Docker (opção Linux/macOS)
 ├── data/                            # fontes (os arquivos do IMDb somam cerca de 7,5 GB)
 │   ├── tmdb-movies.csv
