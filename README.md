@@ -56,6 +56,10 @@ tabd-dw-filmes/
 │   ├── analise_exploratoria.py      # análise exploratória sobre a vw_filme
 │   ├── resumo_eda.md                # resultados numéricos da análise
 │   └── figuras/                     # eda_01 ... eda_06
+├── dashboard/
+│   ├── app.py                       # painel Streamlit: Meta SMART e as 12 perguntas
+│   └── requirements.txt
+├── .streamlit/config.toml           # tema escuro do painel
 ├── scripts/
 │   └── executar_job.bat             # roda o job no Windows (Kitchen)
 ├── logs/
@@ -165,6 +169,19 @@ A análise exploratória grava as figuras em `eda/figuras/` e o resumo numérico
 
 Repita o passo 3 sem recriar o schema: a carga é idempotente e não duplica dados. Cada execução
 leva cerca de 3,5 minutos, a maior parte na leitura do `imdb.title.principals.csv` (4,9 GB).
+
+### 7. Painel (Streamlit)
+
+O painel mostra a Meta SMART e as 12 perguntas com filtros e tabelas. Ele lê os CSVs de
+`resultados/` (o conteúdo das views na carga registrada), então roda sem o banco:
+
+```bat
+.venv\Scripts\pip install -r dashboard\requirements.txt
+.venv\Scripts\streamlit run dashboard\app.py
+```
+
+Para publicar com link: em https://share.streamlit.io, crie um app apontando para este
+repositório, branch `main`, arquivo `dashboard/app.py`.
 
 ## Execução no Linux/macOS (Docker)
 
