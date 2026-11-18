@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: dw_filmes_pg
+    environment:
+      POSTGRES_DB: dw_filmes
+      POSTGRES_USER: dw_filmes
+      POSTGRES_PASSWORD: dw_filmes
+    ports:
+      - "55432:5432"
+    volumes:
+      - dw_filmes_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dw_filmes -d dw_filmes"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: dw_filmes_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@dwfilmes.local
+      PGADMIN_DEFAULT_PASSWORD: dw_filmes
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+
+volumes:
+  dw_filmes_pgdata:

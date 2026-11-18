@@ -1,0 +1,15 @@
+# Arquivos grandes demais para o GitHub (limite de 100 MB por arquivo).
+# Baixe-os conforme o README.
+data/imdb.*.csv
+data/tmdb_ratings_export.csv
+data/tmdb_5000_credits.csv
+
+# Ambiente Python
+.venv/
+__pycache__/
+*.pyc
+
+# Banco local e temporários
+pgdata/
+*.tmp
+~$*
