@@ -1,0 +1,46 @@
+genero_principal,janela_mercado,filmes,receita_mediana_mi,nota_media,pos_receita,pos_nota,critica_media,pos_critica
+Action,Fim de Ano,83,107.1,64.6,2,1,51.0,2
+Action,Premiacoes,87,43.9,59.8,4,4,35.5,4
+Action,Regular,267,62.5,63.1,3,3,46.9,3
+Action,Verao,265,123.7,63.4,1,2,52.2,1
+Adventure,Fim de Ano,59,292.4,69.0,1,1,62.6,1
+Adventure,Premiacoes,24,131.7,66.0,3,3,59.1,3
+Adventure,Regular,98,110.8,66.1,4,2,61.5,2
+Adventure,Verao,133,173.1,65.1,2,4,56.3,4
+Animation,Fim de Ano,14,251.3,70.3,2,1,73.3,1
+Animation,Regular,42,192.1,65.9,3,3,60.6,3
+Animation,Verao,40,314.0,66.5,1,2,65.2,2
+Comedy,Fim de Ano,125,99.3,64.3,1,1,51.2,3
+Comedy,Premiacoes,115,36.5,60.8,4,4,42.6,4
+Comedy,Regular,289,41.5,62.7,3,3,51.4,2
+Comedy,Verao,263,65.2,63.3,2,2,52.2,1
+Crime,Fim de Ano,20,89.8,71.9,1,1,71.3,1
+Crime,Premiacoes,27,68.0,68.4,2,3,55.1,4
+Crime,Regular,80,36.8,67.8,4,4,59.9,3
+Crime,Verao,48,66.9,68.8,3,2,69.0,2
+Documentary,Regular,14,9.7,71.6,1,1,78.6,1
+Drama,Fim de Ano,165,100.5,72.0,1,1,70.7,1
+Drama,Premiacoes,105,28.2,66.1,4,4,52.3,4
+Drama,Regular,388,28.7,68.2,3,2,61.4,3
+Drama,Verao,231,36.6,67.8,2,3,63.6,2
+Family,Regular,16,82.3,65.1,2,1,60.2,2
+Family,Verao,16,101.7,62.7,1,2,61.6,1
+Fantasy,Fim de Ano,19,95.1,62.6,2,3,53.4,2
+Fantasy,Premiacoes,14,85.2,60.9,3,4,42.4,4
+Fantasy,Regular,32,71.6,65.8,4,1,55.1,1
+Fantasy,Verao,50,169.6,63.4,1,2,52.5,3
+Horror,Fim de Ano,20,51.6,59.0,2,3,51.2,1
+Horror,Premiacoes,33,36.1,56.5,4,4,41.4,4
+Horror,Regular,120,52.5,59.9,1,1,44.1,3
+Horror,Verao,104,47.2,59.8,3,2,49.7,2
+Mystery,Regular,23,38.2,65.5,1,1,55.1,1
+Romance,Regular,29,58.0,68.3,2,1,64.1,1
+Romance,Verao,21,104.0,65.3,1,2,56.8,2
+Science Fiction,Fim de Ano,17,157.8,69.5,2,1,61.9,1
+Science Fiction,Premiacoes,10,61.2,61.6,4,4,40.1,4
+Science Fiction,Regular,33,66.7,64.3,3,3,58.2,2
+Science Fiction,Verao,40,162.1,65.6,1,2,56.0,3
+Thriller,Fim de Ano,19,126.1,68.4,1,1,58.8,1
+Thriller,Premiacoes,29,40.7,60.2,4,4,45.2,4
+Thriller,Regular,73,42.4,63.8,3,2,49.3,3
+Thriller,Verao,43,48.2,62.2,2,3,49.3,2

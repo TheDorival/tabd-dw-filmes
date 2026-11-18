@@ -1,0 +1,4 @@
+ordem,grupo,combinacoes,filmes,taxa_prejuizo_pct,roi_mediano_pct,nota_media,diferenca_nota,reducao_prejuizo_pct,meta_taxa_prejuizo_pct,meta_nota_minima,cumpre_meta
+1,Linha de base (todos os lancamentos 2011-2015),65,865,27.4,120.4,63.72,0.00,0.0,21.9,61.72,f
+2,Regra inicial (so taxa de prejuizo),14,198,20.7,175.6,61.70,-2.02,24.4,21.9,61.72,f
+3,Regra final (prejuizo e nota historica),8,75,18.7,133.3,64.53,0.82,31.9,21.9,61.72,t

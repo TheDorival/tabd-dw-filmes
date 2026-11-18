@@ -1,0 +1,41 @@
+genero_principal,janela_mercado,filmes,filmes_equilibrados,taxa_equilibrio_pct,roi_mediano_pct,critica_media,nota_media
+Crime,Fim de Ano,16,10,62.5,281.8,71.3,73.1
+Science Fiction,Fim de Ano,15,7,46.7,226.1,61.9,68.7
+Animation,Verao,38,16,42.1,199.8,65.2,67.8
+Crime,Verao,44,18,40.9,182.8,69.0,69.0
+Drama,Fim de Ano,158,56,35.4,165.8,70.7,72.0
+Thriller,Fim de Ano,19,5,26.3,130.7,58.8,68.4
+Romance,Verao,19,5,26.3,181.8,56.8,66.2
+Drama,Verao,211,55,26.1,117.9,63.6,68.0
+Science Fiction,Regular,28,7,25.0,107.6,58.2,63.9
+Fantasy,Fim de Ano,16,4,25.0,124.1,53.4,64.9
+Science Fiction,Verao,37,9,24.3,157.1,56.0,65.2
+Adventure,Fim de Ano,54,13,24.1,173.9,62.6,69.4
+Drama,Regular,361,84,23.3,51.9,61.4,68.1
+Adventure,Regular,92,21,22.8,129.8,61.5,66.2
+Adventure,Premiacoes,22,5,22.7,133.9,59.1,66.3
+Action,Fim de Ano,80,17,21.3,106.6,51.0,64.7
+Crime,Premiacoes,24,5,20.8,74.5,55.1,68.5
+Fantasy,Verao,44,9,20.5,113.4,52.5,62.8
+Crime,Regular,75,15,20.0,76.8,59.9,67.6
+Family,Regular,15,3,20.0,96.5,60.2,64.9
+Romance,Regular,26,5,19.2,80.2,64.1,68.4
+Comedy,Verao,245,45,18.4,166.0,52.2,63.3
+Adventure,Verao,121,21,17.4,133.3,56.3,65.4
+Horror,Fim de Ano,18,3,16.7,153.8,51.2,59.8
+Action,Verao,239,38,15.9,126.5,52.2,63.7
+Comedy,Fim de Ano,117,18,15.4,153.9,51.2,64.2
+Fantasy,Regular,26,4,15.4,73.2,55.1,65.7
+Horror,Verao,93,14,15.1,189.7,49.7,60.5
+Thriller,Regular,69,10,14.5,46.4,49.3,64.1
+Drama,Premiacoes,98,14,14.3,45.6,52.3,66.3
+Mystery,Regular,21,3,14.3,-17.2,55.1,65.1
+Thriller,Verao,37,5,13.5,110.4,49.3,61.9
+Comedy,Regular,269,36,13.4,97.2,51.4,62.8
+Animation,Regular,35,4,11.4,109.6,60.6,65.8
+Action,Regular,246,27,11.0,56.7,46.9,63.2
+Horror,Regular,107,10,9.3,228.3,44.1,59.9
+Comedy,Premiacoes,110,7,6.4,131.8,42.6,61.0
+Action,Premiacoes,76,4,5.3,23.7,35.5,59.6
+Thriller,Premiacoes,27,1,3.7,84.0,45.2,60.6
+Horror,Premiacoes,31,0,0.0,247.8,41.4,57.4

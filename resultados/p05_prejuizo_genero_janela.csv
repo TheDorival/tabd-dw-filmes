@@ -1,0 +1,42 @@
+genero_principal,janela_mercado,filmes,taxa_prejuizo_pct,roi_mediano_pct,nota_media
+Science Fiction,Fim de Ano,17,0.0,258.9,69.5
+Animation,Verao,40,12.5,199.8,66.5
+Family,Regular,16,12.5,141.0,65.1
+Romance,Verao,21,14.3,181.8,65.3
+Horror,Fim de Ano,20,15.0,127.6,59.0
+Science Fiction,Verao,40,17.5,170.7,65.6
+Comedy,Verao,263,18.6,170.9,63.3
+Adventure,Fim de Ano,59,18.6,172.7,69.0
+Family,Verao,16,18.8,147.7,62.7
+Horror,Regular,120,19.2,219.0,59.9
+Horror,Verao,104,19.2,177.4,59.8
+Comedy,Fim de Ano,125,20.0,153.9,64.3
+Adventure,Premiacoes,24,20.8,141.2,66.0
+Adventure,Verao,133,21.1,123.4,65.1
+Fantasy,Verao,50,22.0,123.6,63.4
+Crime,Premiacoes,27,22.2,73.7,68.4
+Action,Fim de Ano,83,22.9,110.4,64.6
+Action,Verao,265,23.0,119.6,63.4
+Drama,Fim de Ano,165,23.0,164.5,72.0
+Horror,Premiacoes,33,24.2,247.0,56.5
+Crime,Verao,48,25.0,155.1,68.8
+Crime,Fim de Ano,20,25.0,267.8,71.9
+Animation,Regular,42,26.2,111.7,65.9
+Comedy,Regular,289,26.3,101.6,62.7
+Thriller,Fim de Ano,19,26.3,130.7,68.4
+Fantasy,Fim de Ano,19,26.3,122.6,62.6
+Adventure,Regular,98,28.6,109.3,66.1
+Comedy,Premiacoes,115,29.6,122.0,60.8
+Science Fiction,Regular,33,30.3,124.8,64.3
+Drama,Verao,231,30.7,115.9,67.8
+Thriller,Premiacoes,29,31.0,64.1,60.2
+Fantasy,Regular,32,31.3,82.1,65.8
+Thriller,Verao,43,32.6,110.4,62.2
+Thriller,Regular,73,32.9,45.0,63.8
+Crime,Regular,80,33.8,76.1,67.8
+Romance,Regular,29,34.5,85.3,68.3
+Action,Regular,267,35.6,56.6,63.1
+Action,Premiacoes,87,37.9,31.8,59.8
+Drama,Regular,388,41.0,46.1,68.2
+Drama,Premiacoes,105,42.9,33.9,66.1
+Mystery,Regular,23,56.5,-12.0,65.5
